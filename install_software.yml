@@ -1,0 +1,99 @@
+---
+- name: Install software on Mac
+  hosts: localhost
+  tasks:
+    - name: Install Homebrew
+      shell: |
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      when: ansible_distribution == 'Darwin'
+      args:
+        warn: false
+
+    - name: Ensure Homebrew is up to date
+      homebrew:
+        update_homebrew: yes
+
+    - name: Install Docker
+      homebrew:
+        name: docker
+        state: present
+      register: docker_installed
+      ignore_errors: true
+
+    - name: Install Terraform
+      homebrew:
+        name: terraform
+        state: present
+      register: terraform_installed
+      ignore_errors: true
+
+    - name: Install Git
+      homebrew:
+        name: git
+        state: present
+      register: git_installed
+      ignore_errors: true
+  
+    - name: Install Go (Golang)
+      homebrew:
+        name: go
+        state: present
+      register: go_installed
+      ignore_errors: true
+
+    - name: Install kubectl
+      homebrew:
+        name: kubectl
+        state: present
+      register: kubectl_installed
+      ignore_errors: true
+
+    - name: Install Python if not already installed
+      homebrew:
+        name: python
+        state: present
+      register: python_installed
+      ignore_errors: true
+
+    - name: Check if Docker is installed
+      command: docker --version
+      register: docker_version
+      ignore_errors: true
+      when: docker_installed is failed
+
+    - name: Check if Terraform is installed
+      command: terraform --version
+      register: terraform_version
+      ignore_errors: true
+      when: terraform_installed is failed
+
+    - name: Check if Git is installed
+      command: git --version
+      register: git_version
+      ignore_errors: true
+      when: git_installed is failed
+
+    - name: Check if Go is installed
+      command: go version
+      register: go_version
+      ignore_errors: true
+      when: go_installed is failed
+
+    - name: Check if kubectl is installed
+      command: kubectl version --client
+      register: kubectl_version
+      ignore_errors: true
+      when: kubectl_installed is failed
+
+    - name: Check if Python is installed
+      command: python --version
+      register: python_version
+      ignore_errors: true
+      when: python_installed is failed
+
+    - name: Install other software
+      homebrew:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - python
