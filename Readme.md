@@ -1,5 +1,3 @@
-Sure! Here’s a structured README file for your Mac installation setup using Ansible and Homebrew.
-
 ---
 
 # Mac Installation Script
